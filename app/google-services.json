@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "802239765401",
+    "project_id": "myshoppinglist-55b63",
+    "storage_bucket": "myshoppinglist-55b63.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802239765401:android:cb18691c9f76ca1036d108",
+        "android_client_info": {
+          "package_name": "com.farkasatesz.myshoppinglist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "802239765401-7v50jm3lbdhkjgtbcl6033q62cmsc50o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5T1sjO1IOtWTH8KvhG-Nk3k5i08kBHDA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802239765401-7v50jm3lbdhkjgtbcl6033q62cmsc50o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
