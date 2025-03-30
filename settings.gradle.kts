@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "MyShoppingList"
 include(":app")
 include(":core")
+include(":feature-firestore")
