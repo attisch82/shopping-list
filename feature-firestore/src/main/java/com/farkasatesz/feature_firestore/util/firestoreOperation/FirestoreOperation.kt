@@ -24,7 +24,7 @@ object FirestoreOperation {
     inline fun <reified T: FirestoreModel<T> > getById(
         collection: CollectionReference,
         id: String,
-        errorItem: FirestoreModel<T>
+        errorItem: T
     ) = flow {
         val snapshot = collection.document(id).get().await()
         val item = snapshot.toObject(T::class.java) ?: errorItem
@@ -61,7 +61,7 @@ object FirestoreOperation {
         }.getOrDefault(false)
     }
 
-    suspend inline fun <reified T: FirestoreModel<T> > delete(
+    suspend inline fun delete(
         collection: CollectionReference,
         itemId: String
     ) : Boolean {
@@ -76,10 +76,11 @@ object FirestoreOperation {
 
     inline fun <reified T: FirestoreModel<T> > getByQuery(
         collection: CollectionReference,
+        fieldName: String,
         query: String
     ) = flow {
         val snapshot = collection
-            .whereGreaterThanOrEqualTo("name", query.lowercase())
+            .whereGreaterThanOrEqualTo(fieldName, query.lowercase())
             .whereLessThan("name", query.lowercase() + '\uF8FF')
             .get()
             .await()
@@ -90,5 +91,23 @@ object FirestoreOperation {
     }.catch {
         Log.e("Impl", "getByQuery: ${it.message}", it)
         emit(emptyList())
+    }
+
+    inline fun <reified T: FirestoreModel<T>> getListByFieldName(
+        collection: CollectionReference,
+        fieldName: String,
+        fieldValue: String
+    ) = flow {
+        val snapshot = collection
+            .whereEqualTo(fieldName, fieldValue)
+            .get()
+            .await()
+        val itemList = snapshot.documents.mapNotNull { document ->
+            document.toObject(T::class.java)
+        }
+        emit(itemList)
+    }.catch {
+        emit(emptyList())
+        Log.e("Impl", "getByQuery: ${it.message}", it)
     }
 }
