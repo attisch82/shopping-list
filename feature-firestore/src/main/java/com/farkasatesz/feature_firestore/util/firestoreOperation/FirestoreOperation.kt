@@ -3,38 +3,27 @@ package com.farkasatesz.feature_firestore.util.firestoreOperation
 import android.util.Log
 import com.farkasatesz.core.model.FirestoreModel
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
 object FirestoreOperation {
 
-    inline fun <reified T: FirestoreModel<T> > getAll(
+    suspend fun getAll(
         collection: CollectionReference
-    ) = flow {
-        val snapshot = collection.get().await()
-        val list = snapshot.toObjects(T::class.java)
-        emit(list)
-    }.catch {
-        emit(emptyList())
-        Log.e("FirestoreOperation", "getAll: ${it.message}", it)
+    ): QuerySnapshot {
+        return collection.get().await()
     }
 
-    inline fun <reified T: FirestoreModel<T> > getById(
+    suspend fun getById(
         collection: CollectionReference,
         id: String,
-        errorItem: T
-    ) = flow {
-        val snapshot = collection.document(id).get().await()
-        val item = snapshot.toObject(T::class.java) ?: errorItem
-        emit(item)
-    }.catch {
-        emit(errorItem)
-        Log.e("FirestoreOperation", "getById: ${it.message}", it)
+    ): DocumentSnapshot {
+        return collection.document(id).get().await()
     }
 
-    suspend inline fun <reified T: FirestoreModel<T> > save(
+    suspend fun <T: FirestoreModel<T>> save(
         collection: CollectionReference,
         item: T
     ) : String? {
@@ -47,7 +36,7 @@ object FirestoreOperation {
         }.getOrDefault("")
     }
 
-    suspend inline fun <reified T: FirestoreModel<T> > update(
+    suspend fun <T: FirestoreModel<T> > update(
         collection: CollectionReference,
         itemId: String,
         item: T
@@ -61,7 +50,7 @@ object FirestoreOperation {
         }.getOrDefault(false)
     }
 
-    suspend inline fun delete(
+    suspend fun delete(
         collection: CollectionReference,
         itemId: String
     ) : Boolean {
@@ -74,40 +63,26 @@ object FirestoreOperation {
         }.getOrDefault(false)
     }
 
-    inline fun <reified T: FirestoreModel<T> > getByQuery(
+    suspend fun getByQuery(
         collection: CollectionReference,
         fieldName: String,
         query: String
-    ) = flow {
-        val snapshot = collection
+    ) : QuerySnapshot {
+        return collection
             .whereGreaterThanOrEqualTo(fieldName, query.lowercase())
             .whereLessThan("name", query.lowercase() + '\uF8FF')
             .get()
             .await()
-        val itemList = snapshot.documents.mapNotNull { document ->
-            document.toObject(T::class.java)
-        }
-        emit(itemList)
-    }.catch {
-        Log.e("Impl", "getByQuery: ${it.message}", it)
-        emit(emptyList())
     }
 
-    inline fun <reified T: FirestoreModel<T>> getListByFieldName(
+    suspend fun getListByFieldName(
         collection: CollectionReference,
         fieldName: String,
         fieldValue: String
-    ) = flow {
-        val snapshot = collection
+    ) : QuerySnapshot {
+        return collection
             .whereEqualTo(fieldName, fieldValue)
             .get()
             .await()
-        val itemList = snapshot.documents.mapNotNull { document ->
-            document.toObject(T::class.java)
-        }
-        emit(itemList)
-    }.catch {
-        emit(emptyList())
-        Log.e("Impl", "getByQuery: ${it.message}", it)
     }
 }

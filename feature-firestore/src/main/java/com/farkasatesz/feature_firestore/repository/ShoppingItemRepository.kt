@@ -1,8 +1,8 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.ShoppingItem
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.QuerySnapshot
 
 interface ShoppingItemRepository : Repository<ShoppingItem> {
-    fun getItemsWithQuantityMapped(shoppingListId: String): Flow<Map<String, Int>>
+    suspend fun getItemsWithQuantityMapped(shoppingListId: String): QuerySnapshot
 }

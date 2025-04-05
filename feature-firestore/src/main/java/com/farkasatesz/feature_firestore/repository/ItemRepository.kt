@@ -1,10 +1,10 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.Item
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.QuerySnapshot
 
 interface ItemRepository : Repository<Item> {
-    fun getItemByQuery(query: String): Flow<List<Item>>
-    fun getItemsByCategory(categoryName: String): Flow<List<Item>>
-    fun getItemsByBrand(brandName: String): Flow<List<Item>>
+    suspend fun getItemsByQuery(query: String): QuerySnapshot
+    suspend fun getItemsByCategory(categoryName: String): QuerySnapshot
+    suspend fun getItemsByBrand(brandName: String): QuerySnapshot
 }

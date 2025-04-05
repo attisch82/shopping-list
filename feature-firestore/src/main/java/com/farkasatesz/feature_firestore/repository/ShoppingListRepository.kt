@@ -1,9 +1,9 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.ShoppingList
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.QuerySnapshot
 
 interface ShoppingListRepository : Repository<ShoppingList> {
-    fun getListByQuery(query: String): Flow<List<ShoppingList>>
-    fun getShoppingListBySupermarket(supermarketId: String): Flow<List<ShoppingList>>
+    suspend fun getListByQuery(query: String): QuerySnapshot
+    suspend fun getShoppingListBySupermarket(supermarketId: String): QuerySnapshot
 }

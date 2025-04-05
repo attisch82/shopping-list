@@ -1,8 +1,8 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.BaseList
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.QuerySnapshot
 
 interface BaseListRepository : Repository<BaseList>{
-    fun getListByQuery(query: String): Flow<List<BaseList>>
+    suspend fun getListByQuery(query: String): QuerySnapshot
 }

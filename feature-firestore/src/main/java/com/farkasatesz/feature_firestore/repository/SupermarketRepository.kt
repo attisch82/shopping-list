@@ -1,8 +1,8 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.Supermarket
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.QuerySnapshot
 
 interface SupermarketRepository : Repository<Supermarket> {
-    fun getSupermarketByQuery(query: String): Flow<List<Supermarket>>
+    suspend fun getSupermarketByQuery(query: String): QuerySnapshot
 }

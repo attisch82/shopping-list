@@ -1,11 +1,12 @@
 package com.farkasatesz.feature_firestore.repository
 
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 
 interface Repository <T> {
-    fun getAll(): Flow<List<T>>
-    fun getById(id: String): Flow<T>
+    suspend fun getAll(): QuerySnapshot
+    suspend fun getById(id: String): DocumentSnapshot
     suspend fun add(item: T) : String?
-    suspend fun update(item: T) : Boolean
-    suspend fun delete(item: T) : Boolean
+    suspend fun update(item: T, id: String) : Boolean
+    suspend fun delete(item: T, id: String) : Boolean
 }

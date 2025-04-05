@@ -1,9 +1,10 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.PriceTracker
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 
 interface PriceTrackerRepository : Repository<PriceTracker> {
-    fun getPricesByShoppingItem(shoppingItemId: String): Flow<List<PriceTracker>>
-    suspend fun getLastPrice(shoppingItemId: String): Double
+    suspend fun getPricesByShoppingItem(shoppingItemId: String): QuerySnapshot
+    suspend fun getLastPrice(shoppingItemId: String): DocumentSnapshot
 }

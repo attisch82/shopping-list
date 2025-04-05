@@ -1,8 +1,8 @@
 package com.farkasatesz.feature_firestore.repository
 
 import com.farkasatesz.core.model.UnitType
-import kotlinx.coroutines.flow.Flow
+import com.google.firebase.firestore.QuerySnapshot
 
 interface UnitTypeRepository : Repository<UnitType> {
-    fun getUnitTypeByQuery(query: String): Flow<List<UnitType>>
+   suspend fun getUnitTypeByQuery(query: String): QuerySnapshot
 }
