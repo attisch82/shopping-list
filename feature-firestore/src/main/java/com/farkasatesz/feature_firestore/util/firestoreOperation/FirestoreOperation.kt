@@ -3,29 +3,34 @@ package com.farkasatesz.feature_firestore.util.firestoreOperation
 import android.util.Log
 import com.farkasatesz.core.model.FirestoreModel
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
-object FirestoreOperation {
+class FirestoreOperation<T>(
+    private val collection: CollectionReference,
+    private val clazz: Class<T>
+) {
 
-    suspend fun getAll(
-        collection: CollectionReference
-    ): QuerySnapshot {
-        return collection.get().await()
+    suspend fun getAll(): List<T> {
+        return runCatching {
+            collection.get().await().toObjects<T>(clazz)
+        }.onFailure {
+            Log.e("FirestoreOperation", "getAll: ${it.message}", it)
+        }.getOrDefault(emptyList<T>())
     }
 
     suspend fun getById(
-        collection: CollectionReference,
-        id: String,
-    ): DocumentSnapshot {
-        return collection.document(id).get().await()
+        itemId: String
+    ) : T? {
+        return runCatching {
+            collection.document(itemId).get().await().toObject(clazz)
+        }.onFailure {
+            Log.e("FirestoreOperation", "getById: ${it.message}", it)
+        }.getOrDefault(null)
     }
 
-    suspend fun <T: FirestoreModel<T>> save(
-        collection: CollectionReference,
-        item: T
+    suspend fun save(
+        item: FirestoreModel<T>
     ) : String? {
         return runCatching {
             val snapshot = collection.add(item.toMap()).await()
@@ -36,10 +41,9 @@ object FirestoreOperation {
         }.getOrDefault("")
     }
 
-    suspend fun <T: FirestoreModel<T> > update(
-        collection: CollectionReference,
+    suspend fun update(
         itemId: String,
-        item: T
+        item: FirestoreModel<T>
     ) : Boolean {
         return runCatching {
             collection.document(itemId).set(item.toMap(), SetOptions.merge()).await()
@@ -51,7 +55,6 @@ object FirestoreOperation {
     }
 
     suspend fun delete(
-        collection: CollectionReference,
         itemId: String
     ) : Boolean {
         return runCatching {
@@ -64,25 +67,36 @@ object FirestoreOperation {
     }
 
     suspend fun getByQuery(
-        collection: CollectionReference,
         fieldName: String,
         query: String
-    ) : QuerySnapshot {
+    ) : List<T> {
         return collection
             .whereGreaterThanOrEqualTo(fieldName, query.lowercase())
             .whereLessThan("name", query.lowercase() + '\uF8FF')
             .get()
             .await()
+            .toObjects<T>(clazz)
     }
 
-    suspend fun getListByFieldName(
-        collection: CollectionReference,
+    suspend fun getSingleItemByFieldName(
         fieldName: String,
         fieldValue: String
-    ) : QuerySnapshot {
+    ): T {
         return collection
             .whereEqualTo(fieldName, fieldValue)
             .get()
             .await()
+            .toObjects<T>(clazz)[0]
+    }
+
+    suspend fun getListByFieldName(
+        fieldName: String,
+        fieldValue: String,
+    ) : List<T> {
+        return collection
+            .whereEqualTo(fieldName, fieldValue)
+            .get()
+            .await()
+            .toObjects<T>(clazz)
     }
 }

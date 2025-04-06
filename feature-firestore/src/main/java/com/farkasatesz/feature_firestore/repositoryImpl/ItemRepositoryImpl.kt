@@ -1,8 +1,6 @@
 package com.farkasatesz.feature_firestore.repositoryImpl
 
 import com.farkasatesz.core.model.Item
-import com.farkasatesz.feature_firestore.contracts.CustomQuery
-import com.farkasatesz.feature_firestore.contracts.Filter
 import com.farkasatesz.feature_firestore.repository.ItemRepository
 import com.farkasatesz.feature_firestore.repository.Repository
 import com.farkasatesz.feature_firestore.util.firestoreOperation.FirestoreOperation
@@ -11,19 +9,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 class ItemRepositoryImpl(
     firestore: FirebaseFirestore
 ) : ItemRepository,
-    Repository<Item> by FirestoreRepositoryImpl(firestore, "items")
+    Repository<Item> by FirestoreRepositoryImpl(firestore, "items", Item::class.java)
 {
     private val collection = firestore.collection("items")
-    private val customQuery = CustomQuery<Item> { query ->
-        FirestoreOperation.getByQuery(collection, "name", query)
-    }
-    private val filter = Filter<Item> { fieldName, value ->
-        FirestoreOperation.getListByFieldName(collection, fieldName, value)
-    }
+    private val operation = FirestoreOperation<Item>(collection, Item::class.java)
 
-    override suspend fun getItemsByQuery(query: String) = customQuery.query(query)
+    override suspend fun getItemsByQuery(query: String) = operation.getByQuery("name", query)
 
-    override suspend fun getItemsByCategory(categoryName: String) = filter.by("categoryName", categoryName)
+    override suspend fun getItemsByCategory(categoryName: String) = operation.getListByFieldName("categoryName", categoryName)
 
-    override suspend fun getItemsByBrand(brandName: String) = filter.by("brand", brandName)
+    override suspend fun getItemsByBrand(brandName: String) = operation.getListByFieldName("brand", brandName)
 }

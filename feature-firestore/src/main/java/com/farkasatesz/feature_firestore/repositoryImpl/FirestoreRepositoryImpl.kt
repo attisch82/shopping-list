@@ -7,21 +7,20 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class FirestoreRepositoryImpl<T: FirestoreModel<T>>(
     firestore: FirebaseFirestore,
-    collectionRef: String
+    collectionRef: String,
+    clazz: Class<T>
 ) : Repository<T> {
     private val collection = firestore.collection(collectionRef)
+    private val operation = FirestoreOperation<T>(collection, clazz)
 
-    override suspend fun getAll() = FirestoreOperation.getAll(collection)
+    override suspend fun getAll() = operation.getAll()
 
-    override suspend fun getById(id: String) = FirestoreOperation.getById(
-        collection,
-        id
-    )
+    override suspend fun getById(id: String) = operation.getById(id)
 
-    override suspend fun add(item: T) = FirestoreOperation.save(collection, item)
+    override suspend fun add(item: T) = operation.save(item)
 
-    override suspend fun update(item: T, id: String) = FirestoreOperation.update(collection, id, item)
+    override suspend fun update(item: T, id: String) = operation.update(id, item)
 
-    override suspend fun delete(item: T, id: String) = FirestoreOperation.delete(collection, id)
+    override suspend fun delete(item: T, id: String) = operation.delete(id)
 
 }
